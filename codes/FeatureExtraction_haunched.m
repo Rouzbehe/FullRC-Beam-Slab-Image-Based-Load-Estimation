@@ -1,15 +1,14 @@
-function [OUTPUT]=FeatureExtraction_ex_postcap_BeamCropped_line(cracktype)
+function [OUTPUT]=FeatureExtraction_haunched(cracktype)
 OUTPUT=cell(0);
 
-load Island_Scaled_segmented_ex_postcap_cropped_line.mat
+load Haunched.mat
 
 % MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
 
-for jj=1:length(Island_Scaled_segmented_ex_postcap_cropped_line)
- 
-    BW=Island_Scaled_segmented_ex_postcap_cropped_line{jj,1};
+for jj=1:length(Haunched)
+    
+    BW=Haunched{jj,1};
    [numrow, numcol] = size(BW);
 
    
@@ -106,7 +105,7 @@ end
     
     
     end
-       
+        
     
     % find the average distance between cracks
     dist_map = bwdist(BW);
@@ -128,6 +127,8 @@ end
     else
     average_distance = avg_distance_intensity / avg_distance_area ; 
     end
+
+  
 
         p(1).Compactness=mean(compactness);
         p(1).AspectRatio=mean(aspectRatio);
@@ -163,16 +164,13 @@ end
         p(1).MomentPolar=Mp ;
 
         p(1).Nocracks=length(p);
-        
-
-        p(1).Totalwidth=avg_distance_intensity;
+        p(1).totalwidth=avg_distance_intensity;
         p(1).averagewidth=average_distance;
 
 
     
    
     O=struct2cell(p(1));
-
     if isempty(O)==0;
         F=cell2mat(O(7:29,:))';    % 1-6 are 'Area', 'Perimeter', 'MajorAxisLength', 'MinorAxisLength','Orientation', ... defined in imageproperties
                                    % 27: Nocracks 28.. 29...

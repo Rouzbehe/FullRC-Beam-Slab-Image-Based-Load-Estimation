@@ -1,15 +1,14 @@
-function [OUTPUT]=FeatureExtraction_Purdue2(cracktype)
+function [OUTPUT]=FeatureExtraction_PCA_BeamCropped_line(cracktype)
 OUTPUT=cell(0);
 
-load Purdu_2.mat
+load PCA_Scaled_segmented_cropped_line.mat
 
 % MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
 
-for jj=1:length(Purdu_2)
+for jj=1:length(PCA_Scaled_segmented_cropped_line)
     
-    BW=Purdu_2{jj,1};
+    BW=PCA_Scaled_segmented_cropped_line{jj,1};
    [numrow, numcol] = size(BW);
 
    
@@ -107,7 +106,6 @@ end
     
     end
         
-    
     % find the average distance between cracks
     dist_map = bwdist(BW);
 

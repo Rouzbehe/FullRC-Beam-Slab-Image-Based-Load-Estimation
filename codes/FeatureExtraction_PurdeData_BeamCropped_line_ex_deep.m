@@ -1,15 +1,14 @@
-function [OUTPUT]=FeatureExtraction_Toronto_4m(cracktype)
+function [OUTPUT]=FeatureExtraction_PurdeData_BeamCropped_line_ex_deep(cracktype)
 OUTPUT=cell(0);
 
-load Toronto_4m.mat
+load Purdu_Scaled_segmented_cropped_line_ex_deep.mat
 
 % MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
 
-for jj=1:length(Toronto_4m)
+for jj=1:length(Purdu_Scaled_segmented_cropped_line_ex_deep)
     
-    BW=Toronto_4m{jj,1};
+    BW=Purdu_Scaled_segmented_cropped_line_ex_deep{jj,1};
    [numrow, numcol] = size(BW);
 
    
@@ -107,6 +106,27 @@ end
     
     end
         
+    % find the average distance between cracks
+    dist_map = bwdist(BW);
+
+    %find points furthest from lines
+    lines = watershed(dist_map); 
+    lines = ~(lines > 0);
+
+    %keep only the intensities that correspond to furthest points between lines
+    avg_distance_map = dist_map ;  
+    avg_distance_map(~lines) = 0; 
+
+    %calculate stats
+    avg_distance_intensity = double(sum(sum(avg_distance_map))) ; %add up all the kept intensities
+    avg_distance_area = double(sum(sum(logical(avg_distance_map)))) ;  %number of pixels that contribute to intensity
+    
+    if avg_distance_intensity==0
+        average_distance=300;
+    else
+    average_distance = avg_distance_intensity / avg_distance_area ; 
+    end
+
   
 
         p(1).Compactness=mean(compactness);
@@ -143,14 +163,16 @@ end
         p(1).MomentPolar=Mp ;
 
         p(1).Nocracks=length(p);
-
+        p(1).totalwidth=avg_distance_intensity;
+        p(1).averagewidth=average_distance;
 
 
     
    
     O=struct2cell(p(1));
     if isempty(O)==0;
-        F=cell2mat(O(7:27,:))';
+        F=cell2mat(O(7:29,:))';    % 1-6 are 'Area', 'Perimeter', 'MajorAxisLength', 'MinorAxisLength','Orientation', ... defined in imageproperties
+                                   % 27: Nocracks 28.. 29...
 
         %store feature vectors in a cell array along with the image filename, the
         %binary image filename, and a copy of the image object from CComp. This is

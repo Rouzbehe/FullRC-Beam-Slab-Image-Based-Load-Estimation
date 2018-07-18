@@ -37,8 +37,6 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 [PCA_data,text_PCA] = xlsread('input_worein','PCA');
 % PCA_data = xlsread('input','PCA_ex_postcap');
 
-
-
 [Toronto_Data,text_Toronto]=xlsread('input_worein','Toronto');
 
 % [Toronto_4m_Data,text_Toronto_4m]=xlsread('input_worein','4mdeep');
@@ -67,11 +65,6 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 
 [OUTPUT_low_a_d]=FeatureExtraction('Cracks_low_a_d');
 
-
-
-
-%   end
-    
 for i=1:size(OUTPUT_120,1);
 Faet_120(i,:)=OUTPUT_120{i,1};
 end
@@ -124,9 +117,6 @@ end
 [OUTPUT_Haunched]=FeatureExtraction_haunched('all');
 [OUTPUT_Uniform]=FeatureExtraction_uniform('all');
 
-
-
-%   end
     
 for i=1:size(OUTPUT_Training,1);
 Island_crack(i,:)=OUTPUT_Training{i,1};
@@ -145,7 +135,6 @@ for i=1:size(OUTPUT_Toronto,1);
 Toronto_crack(i,:)=OUTPUT_Toronto{i,1};
 end
 
-
 for i=1:size(OUTPUT_Toronto_4m,1);
 Toronto_4m_crack(i,:)=OUTPUT_Toronto_4m{i,1};
 end
@@ -153,8 +142,6 @@ end
 for i=1:size(OUTPUT_deep,1);
 deep(i,:)=OUTPUT_deep{i,1};
 end
-
-
 
 for i=1:size(OUTPUT_Purdue2,1);
 Purdue2(i,:)=OUTPUT_Purdue2{i,1};
@@ -169,34 +156,32 @@ uniform(i,:)=OUTPUT_Uniform{i,1};
 end
 
 %%
-clear X1 X2 X tvp actualClass predictedClass tvp_stregth test feat_num
-plotfname='class_Nov_6/Random forrest-Feat-zscored1T23';
+clear X1 X2 X tvp actualClass predictedClass tvp_stregth feat_num
+
+plotfname='8connectivity-combined-SVM-V-Feat_20,13,21,51,52,50';
 plotfnameRegression='size effect study';
 plotmultiRegression='Multiregression-size effect study';
 % number of resampling which was defined in other Scripts (the code in 
 %which output was produced)
 
 % featName = {'Compactness','Aspect Ratio', 'ThreshOut','Entropy', 'Contrast','Correlation','Energy','Homegenity','Variance','Area' ,'Perimeter','EulerNumber','Standard Deviation'};
-feat=[1:23];   % 1:20 same as before. 21:No of cracks,22: total distance between cracks 23:ave distance 24:(a/d) 26:(d) 45:shear index 47:(d/s) 50:(width)
-                      % % 45=Av fy/(b S) (shear index)
-classifier=2;  % classifier     1=Random forrest 2=J48 
-                             %   3=SVM 4=logistic 5=Neighbor 6=Multi
-                             %   7=RepTree 8=ZeroR 9=Gaussian Process
-                             % 9 and 10 don't work for classification
+feat=[20,13,21,51,52,50];   % 1:20 same as before. 21:No of cracks,22: total distance between cracks 23:ave distance 24:(a/d) 26:(d) 45:shear index 47:(d/s) 50:(width)
+                      % % 45=Av fy/(b S) (shear index) 51:a/h 52:h
+classifier=4;  % classifier     1=Support Vector Regression 2=Nearest Neighbor Regression 
+                             %   3=Gaussian Process Regression 4=SVM regression (broght it here from other code 'svmRegressioInMatlab.m')
+                             %   5=Linear Rgression    6=MultilayerPerceptron    7=REPTree   8=ZeroR
                              
-testfeatNo=47;%   25=V   27=M  28=M/EI  29 =M/bd2 30=M/Asfy  29=V/GJ  32=M/bh 33=M/bhl 34=M/bdl 35=M/fcbhl 36=M/bh(l-a) or M/bh(l/2)
-              % 37=M/abh(l-a) or M/abh(l/2) 40=M/(pho EI) 41=M/(pho bd)
+testfeatNo=25;%  24=deflectionRatio, 25=V   27=M  28=M/EI  29 =M/bh2 30=M/Asfy   32=M/bh 33=M/bhl 34=M/bdl 35=M/fcbhl 36=M/bh(l-a) or M/bh(l/2)
+              % 37=M/abh(l-a) or M/abh(l/2) 38=M/a^2bh 41=M/(pho bd)
               % 42=V/(2*sqrt(fc) bd) or V_V_ACI    43=FailureRatio
               % 44=v/(2*sqrt(fc) bd+As fy d/s) v/shear strength
               % 46=Av fy d/s (N) (shear stregth of the steel)
-             % (45, 46 and 47 features are zero for data sets w/o shear
-             % reinfprcement)
-num_crossVali=10;    
-              
+              % 48=Shear through predicted M (KN)
+              % 49=Shear through predicted M/bh2 (KN)
+              % 50=M through M/bh2
+
 % Performing num_crossVali fold Cross Validation
-
-%%%%%%%%%the approproate function should be chosen here %%%%%%%%%%%%
-
+num_crossVali=10;   
 
 
 % % all data sets 
@@ -214,42 +199,45 @@ X2=[Faet_120(:,:),Data_120(1:end,3:31);Faet_95(:,:),Data_95(1:end,3:31);Faet_7(:
 Specimens_name2=[text_120(2:end,1);text_95(2:end,1);text_7specimen(2:end,1);text_5specimen(2:end,1);text_2specimen(2:end,1);text_2meter(2:end,1);text_low_a_d(2:end,1)];
 
 
-
-
 % adding 3 columns of zeros for features 45,46 and 47 for beam w/o shear
 % rein
 X=[X1,zeros(length(X1),3),X1_2; X2];
 Specimens_name=[Specimens_name1;Specimens_name2];
 
 
+
 feat_num = X(:,feat);
 
 % rounding a/h and h for classification
-% feat_num=[X(:,feat),round(X(:,[51]))];
+feat51 = floor(X(:,51)) + ceil( (X(:,51)-floor(X(:,51)))/0.5) * 0.5; % rounding up to 0.5
+feat52 = floor( floor(X(:,52))/50) * 50; % rounding to 20 mm
+
+% feat_num=[X(:,feat),feat51,feat52];
+% feat_num=[X(:,feat),feat51];
+
+
 % feat_num=[round(X(:,[51,52]))];
 % feat_num=[round(X(:,[52]))];
-feat_num=zscore(feat_num);
+% feat_num=zscore(feat_num);
 
 % feat_num=zscore(feat_num);
 featName = arrayfun(@num2str, [1:1:length(feat_num(1,:))], 'unif', 0);   
 
-% if testfeatNo==48
-%     class_num = X(:,42); 
-% else
-     class_num = X(:,testfeatNo);    
-% 
-% end
+if testfeatNo==48
+    class_num = X(:,27); 
+    
+elseif testfeatNo==49
+     class_num = X(:,29); 
+elseif testfeatNo==50
+     class_num = X(:,29); 
+else
+        class_num = X(:,testfeatNo);    
 
-   class_nom=cell(size(class_num))
+end
 
-% converting to nominal variables (Weka cannot classify numerical variables)    
- for kk=1:length(class_num);
-   if class_num(kk)==0;
-     class_nom(kk)={'without_rein'};
-   else
-    class_nom(kk)={'with_rein'};
-   end
- end
+    jj=1;
+    
+  
     
 %  [un idx_last idx] = unique(Specimens_name);
 % N = length(un);
@@ -260,7 +248,7 @@ featName = arrayfun(@num2str, [1:1:length(feat_num(1,:))], 'unif', 0);
     
 
 
-[un idx_last idx] = unique(Specimens_name,'stable');
+[un idx_last, idx] = unique(Specimens_name,'stable');
 unique_idx = accumarray(idx(:),(1:length(idx))',[],@(x) {sort(x)});
 % indices = crossvalind('Kfold',size(X,1),num_crossVali);
 
@@ -273,152 +261,64 @@ for  k = 1:num_crossVali
     id=find(indices == k);
     for m=1:length(id)
         
-        test=[test; unique_idx{id(m)}];
+        test=[test; unique_idx{id(m)}]
     end
 %     train = unique_idx{(k~=indices)};
     train=Spec_idx(~ismember(Spec_idx,test));
 %     train = Spec_idx(~(Spec_idx==unique_idx{k}));
     
+
+    
     feature_train = feat_num(train,:);
-    class_train = class_nom(train,1);
+    class_train = class_num(train,1);
     
 
     feature_test = feat_num(test,:);
-    class_test = class_nom(test,1);
+    class_test = class_num(test,1);
    
+
     %performing regression
-%     [actual_tmp, predicted_tmp, stdDev_tmp] = wekaRegression(feature_train, class_train, feature_test, class_test, featName, classifier);
-    [actual_tmp, predicted_tmp, probDistr]=wekaClassification(feature_train, class_train, feature_test, class_test, featName, classifier);
+    [actual_tmp, predicted_tmp, stdDev_tmp] = wekaRegression(feature_train, class_train, feature_test, class_test, featName, classifier);
+%     selectedAttr(jj,kk)=wekaFeatureSelection(feature_train, feature_test, class_train, class_test, featName, 1);
 
     %accumulating the results
     actualClass(ismember(Spec_idx,test),:) = actual_tmp;
     predictedClass(ismember(Spec_idx,test),:) = predicted_tmp;   
-    probability(ismember(Spec_idx,test),:) = probDistr; 
+
+
 
     clear feature_train class_train feature_test class_test
-    clear actual_tmp predicted_tmp probDistr 
+    clear actual_tmp predicted_tmp probDistr_tmp 
 
 end
 
-AcuracyTest=sum(strcmp(actualClass,predictedClass))/length(predictedClass)*100 ;
-AccuracyX1=sum(strcmp(actualClass(1:length(X1)),predictedClass(1:length(X1))))/length(predictedClass(1:length(X1)))*100 ;
-AccuracyX2=sum(strcmp(actualClass(length(X1)+1:end),predictedClass(length(X1)+1:end)))/length(predictedClass(length(X1)+1:end))*100 ;
 
-% 
-% figure (13)
-% 
- Y=[AccuracyX1;AccuracyX2;AcuracyTest]
- err=[100*std(probability(1:length(X1),1)),100*std(probability(length(X1)+1:end,2)),0]
-figure 
-fH = gcf; colormap(jet(3));
-h = bar(diag(Y),'stack');
-ylabel('classification accuracy (%)')
-ybuff=3;
-for i=1:length(h)
-    XDATA=get(get(h(i),'Children'),'XData');
-    YDATA=get(get(h(i),'Children'),'YData');
-    for j=1:size(XDATA,2)
-        if i==j
-        x=XDATA(1,j)-(XDATA(3,j)-XDATA(1,j))/80;
-        x2=XDATA(1,j)+(XDATA(3,j)-XDATA(1,j))/1.35;
-        y=YDATA(2,j)+ybuff;
-        t=['',num2str(YDATA(2,j),3), '%' ];
-        text(x,y,t,'Color','k','HorizontalAlignment','left','Rotation',0)
-%         if j<=2
-%         t_error=['SD=',num2str(err(j),3), '%' ];
-%         text(x2,y,t_error,'Color','k','HorizontalAlignment','left','Rotation',90) 
-%         end
-        end
 
+    % to multiply predicted shear to span length to build moment
+    if testfeatNo==48
+        actualClass=actualClass./X(:,48);
+        predictedClass=predictedClass./X(:,48);
+    elseif testfeatNo==49
+        actualClass=actualClass.*X(:,49)./X(:,48);
+        predictedClass=predictedClass.*X(:,49)./X(:,48);
+    elseif testfeatNo==50
+        actualClass=actualClass.*X(:,49);
+        predictedClass=predictedClass.*X(:,49);
     end
-end
-
-l = cell(1,3);
-l{3}='Prediction accuracy for classifying specimens with and without reinforcement'; l{1}='Accuracy of the model to classify specimens without reinforcement'; l{2}='Accuracy of the model to classify specimens with reinforcement'; 
-legend(h,l,'Location','NorthOutside');
-
-ylim([0 120])
-applyhatch_pluscolor(fH,'/\c', 0, [0 1 0], jet(3))
-
-print(plotfname,'-dpng', '-r1500');
-
-figure;
+    
 figure2=figure('Position', [100, 100, 1024, 1200]);
-
-tot_op = probability(:,1);
-targets = strcmp(actualClass,'without_rein');
-th_vals= sort(tot_op);
-
-for i = 1:length(th_vals)
-  b_pred = (tot_op>=th_vals(i,1));
-  TP = sum(b_pred == 1 & targets == 1);
-  FP = sum(b_pred == 1 & targets == 0);
-  TN = sum(b_pred == 0 & targets == 0);
-  FN = sum(b_pred == 0 & targets == 1);
-  sens(i) = TP/(TP+FN);
-  spec(i) = TN/(TN+FP);
-end
+tvp=[mean(actualClass,2), nanmean(predictedClass,2)];
 
 
-cspec1 = 1-spec;
-cspec1 = cspec1(end:-1:1);
-sens1 = sens(end:-1:1);
 
-tot_op = probability(:,2);
-targets = strcmp(actualClass,'with_rein');
-th_vals= sort(tot_op);
-
-for i = 1:length(th_vals)
-  b_pred = (tot_op>=th_vals(i,1));
-  TP = sum(b_pred == 1 & targets == 1);
-  FP = sum(b_pred == 1 & targets == 0);
-  TN = sum(b_pred == 0 & targets == 0);
-  FN = sum(b_pred == 0 & targets == 1);
-  sens(i) = TP/(TP+FN);
-  spec(i) = TN/(TN+FP);
-  accu(i)=(TP+TN)/(TP+FP+TN+FN);
-end
+plotCorrelation_CI(tvp,plotfname,testfeatNo)
 
 
-cspec2 = 1-spec;
-cspec2 = cspec2(end:-1:1);
-sens2 = sens(end:-1:1);
+Xaxis=23;Yaxis=42;curveaxis=26; %13 15
 
 
-plot(cspec1,sens1,'r','LineWidth',1.3);
-hold on
-plot(cspec2,sens2,'--b','LineWidth',1.5);
+plotname='regression-all data sets-d lower 20 in-fractureratio';
 
-  xlabel('False Positive Rate (1 - Specificity)','fontsize',17);
-  ylabel('True Positive Rate (Sensitivity)','fontsize',17);
-  
-AUC1 = sum(0.5*(sens1(2:end)+sens1(1:end-1)).*(cspec1(2:end) - cspec1(1:end-1)));
-AUC2 = sum(0.5*(sens2(2:end)+sens2(1:end-1)).*(cspec2(2:end) - cspec2(1:end-1)));
+Zaxis=43;Xaxis=13;Yaxis=3; %Zaxis=40;Xaxis=13;Yaxis=5;
 
-    LEG=legend(['Class 1 (Shear critical), AUC=' num2str(AUC1)],['Class 2 (Shear reinforced), AUC=' num2str(AUC2)],'Location','best');
-  set(LEG,'fontsize',17);
-set(gca,'fontsize',17)
-
-% fprintf('\nAUC: %g \n',AUC);
-print(plotfname,'-dpdf', '-r2500');
-
-figure ;
-figure2=figure('Position', [100, 100, 1024, 1200]);
-
-
-% [n1,ctr1] = hist(accu,20);
-[b1,m1,n1] = unique(th_vals);
-th_vals = th_vals(m1);accu = accu(m1);
-bar(th_vals,accu,0.5);
-  xlabel('Threshhold','fontsize',17);
-  ylabel('Accuracy (%)','fontsize',17);
-
- [Y,I]=sort(accu); 
- idxx=I(end);
-    LEG=legend(['Maximum Accuracy=' num2str(accu(idxx)),' at Optimal Threshhold=' num2str(th_vals(idxx)), ],'Location','best');
-  
-set(gca,'fontsize',17)  
-set(LEG,'fontsize',17);
-grid ON
-print(plotfname,'-djpeg', '-r1500');
 

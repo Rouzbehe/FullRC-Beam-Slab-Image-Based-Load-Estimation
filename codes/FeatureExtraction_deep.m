@@ -1,15 +1,12 @@
-function [OUTPUT]=FeatureExtraction_PCA_BeamCropped_line(cracktype)
+function [OUTPUT]=FeatureExtraction_deep(cracktype)
 OUTPUT=cell(0);
 
-load PCA_Scaled_segmented_cropped_line.mat
+load deep.mat
 
-% MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
-
-for jj=1:length(PCA_Scaled_segmented_cropped_line)
+for jj=1:length(deep)
     
-    BW=PCA_Scaled_segmented_cropped_line{jj,1};
+    BW=deep{jj,1};
    [numrow, numcol] = size(BW);
 
    

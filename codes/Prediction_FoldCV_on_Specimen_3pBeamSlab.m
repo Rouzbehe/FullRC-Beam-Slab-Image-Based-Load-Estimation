@@ -42,7 +42,7 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 [Toronto_Data,text_Toronto]=xlsread('input_worein','Toronto');
 
 % [Toronto_4m_Data,text_Toronto_4m]=xlsread('input_worein','4mdeep');
-[deep_Data,text_deep]=xlsread('input_worein','deep');
+[deep_Data,text_deep]=xlsread('input_worein','deep_2'); %'deep' includes 4-m and 2-m deep beam, but 'deem_2' includes just 2-m deep bemas
 
 [Purdue2_Data,text_Purdue2]=xlsread('input_worein','Purdu_2');
 [Haunched_Data,text_Haunched]=xlsread('input_worein','Haunched');
@@ -67,10 +67,6 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 
 [OUTPUT_low_a_d]=FeatureExtraction('Cracks_low_a_d');
 
-
-
-
-%   end
     
 for i=1:size(OUTPUT_120,1);
 Faet_120(i,:)=OUTPUT_120{i,1};
@@ -117,16 +113,14 @@ end
 
 
 [OUTPUT_Toronto_4m]=FeatureExtraction_Toronto_4m('all');
-[OUTPUT_deep]=FeatureExtraction_deep('all');
+% [OUTPUT_deep]=FeatureExtraction_deep('all');
+[OUTPUT_deep]=FeatureExtraction_deep_2('all');  %'deep' includes 4-m and 2-m deep beam, but 'deep_2' includes just 2-m deep bemas
 
 [OUTPUT_Toronto]=FeatureExtraction_Toronto('all');
 [OUTPUT_Purdue2]=FeatureExtraction_Purdue2('all');
 [OUTPUT_Haunched]=FeatureExtraction_haunched('all');
 [OUTPUT_Uniform]=FeatureExtraction_uniform('all');
 
-
-
-%   end
     
 for i=1:size(OUTPUT_Training,1);
 Island_crack(i,:)=OUTPUT_Training{i,1};
@@ -155,7 +149,6 @@ deep(i,:)=OUTPUT_deep{i,1};
 end
 
 
-
 for i=1:size(OUTPUT_Purdue2,1);
 Purdue2(i,:)=OUTPUT_Purdue2{i,1};
 end
@@ -169,43 +162,36 @@ uniform(i,:)=OUTPUT_Uniform{i,1};
 end
 
 %%
-clear X1 X2 X tvp actualClass predictedClass tvp_stregth feat_num
+clear X1 X2 X tvp actualClass predictedClass tvp_stregth
 
-plotfname='8connectivity-combined-SVM-V-Feat_20,13,21,51,52,50';
-plotfnameRegression='size effect study';
-plotmultiRegression='Multiregression-size effect study';
-% number of resampling which was defined in other Scripts (the code in 
-%which output was produced)
+plotfname='ultimate-LS-3pBeamSlab-V-SVM-Feat_20,13,21,50,51,52';
 
 % featName = {'Compactness','Aspect Ratio', 'ThreshOut','Entropy', 'Contrast','Correlation','Energy','Homegenity','Variance','Area' ,'Perimeter','EulerNumber','Standard Deviation'};
-feat=[20,13,21,51,52,50];   % 1:20 same as before. 21:No of cracks,22: total distance between cracks 23:ave distance 24:(a/d) 26:(d) 45:shear index 47:(d/s) 50:(width)
+feat=[20,13,21,50,51,52];   % 1:20 same as before. 21:No of cracks,22: total distance between cracks 23:ave distance 24:(a/d) 26:(d) 45:shear index 47:(d/s) 50:(width)
                       % % 45=Av fy/(b S) (shear index) 51:a/h 52:h
 classifier=4;  % classifier     1=Support Vector Regression 2=Nearest Neighbor Regression 
                              %   3=Gaussian Process Regression 4=SVM regression (broght it here from other code 'svmRegressioInMatlab.m')
                              %   5=Linear Rgression    6=MultilayerPerceptron    7=REPTree   8=ZeroR
                              
-testfeatNo=25;%  24=deflectionRatio, 25=V   27=M  28=M/EI  29 =M/bh2 30=M/Asfy   32=M/bh 33=M/bhl 34=M/bdl 35=M/fcbhl 36=M/bh(l-a) or M/bh(l/2)
+testfeatNo=25;%  24=deflectionRatio, 25=V   27=M  28=M/EI  29 =M/bd2 30=M/Asfy   32=M/bh 33=M/bhl 34=M/bdl 35=M/fcbhl 36=M/bh(l-a) or M/bh(l/2)
               % 37=M/abh(l-a) or M/abh(l/2) 38=M/a^2bh 41=M/(pho bd)
               % 42=V/(2*sqrt(fc) bd) or V_V_ACI    43=FailureRatio
               % 44=v/(2*sqrt(fc) bd+As fy d/s) v/shear strength
               % 46=Av fy d/s (N) (shear stregth of the steel)
               % 48=Shear through predicted M (KN)
-              % 49=Shear through predicted M/bh2 (KN)
-              % 50=M through M/bh2
-num_crossVali=10;   
+              % 49=Shear through predicted M/bd2 (KN)
+              % 50=M through M/bd2
 
 % Performing num_crossVali fold Cross Validation
-
-%%%%%%%%%the approproate function should be chosen here %%%%%%%%%%%%
-
+num_crossVali=10;   
 
 
 % % all data sets 
 % data sets without reinforcement
-X1=[Island_crack(:,:),Island_Data(1:end,3:23);Purdue_crack(:,:),Purdue_data(1:end,2:22);PCA_crack(:,:),PCA_data(1:end,3:23);Toronto_crack(:,:),Toronto_Data(1:end,3:23);deep(:,:),deep_Data(1:end,3:23);Purdue2(:,:),Purdue2_Data(1:end,2:22);haunched(:,:),Haunched_Data(1:end,3:23); uniform(:,:),Uniform_Data(1:end,3:23)];
-Specimens_name1=[text_Island(2:end,1);text_Purdue(2:end,1);text_PCA(2:end,1);text_Toronto(2:end,1);text_deep(2:end,1);text_Purdue2(2:end,1);text_Haunched(2:end,1);text_Uniform(2:end,1)];
+X1=[Purdue_crack(:,:),Purdue_data(1:end,2:22);PCA_crack(:,:),PCA_data(1:end,3:23);Toronto_crack(:,:),Toronto_Data(1:end,3:23);deep(:,:),deep_Data(1:end,3:23);Purdue2(:,:),Purdue2_Data(1:end,2:22)];
+Specimens_name1=[text_Purdue(2:end,1);text_PCA(2:end,1);text_Toronto(2:end,1);text_deep(2:end,1);text_Purdue2(2:end,1)];
 
-X1_2=[Island_Data(1:end,24:28);Purdue_data(1:end,23:27);PCA_data(1:end,24:28);Toronto_Data(1:end,24:28);deep_Data(1:end,24:28);Purdue2_Data(1:end,23:27);Haunched_Data(1:end,24:28); Uniform_Data(1:end,24:28)];
+X1_2=[Purdue_data(1:end,23:27);PCA_data(1:end,24:28);Toronto_Data(1:end,24:28);deep_Data(1:end,24:28);Purdue2_Data(1:end,23:27)];
 
 % data sets with reinforcement
 % X2=[Faet_120(:,:),Data_120(1:end,3:26);Faet_95(:,:),Data_95(1:end,3:26);Faet_7(:,:),Data_7specimen(1:end,3:26);Faet_5(:,:),Data_5specimen(1:end,3:26);Faet_2(:,:),Data_2specimen(1:end,3:26);Faet_2meter(:,:),Data_2meter(1:end,3:26);Faet_low_a_d(:,:),Data_low_a_d(1:end,3:26)];
@@ -218,9 +204,16 @@ Specimens_name2=[text_120(2:end,1);text_95(2:end,1);text_7specimen(2:end,1);text
 
 
 % adding 3 columns of zeros for features 45,46 and 47 for beam w/o shear
-% rein
+% % rein
+
 X=[X1,zeros(length(X1),3),X1_2; X2];
 Specimens_name=[Specimens_name1;Specimens_name2];
+% 
+% X=[X1,zeros(length(X1),3),X1_2];
+% Specimens_name=[Specimens_name1];
+
+% X=[X2];
+% Specimens_name=[Specimens_name2];
 
 
 
@@ -232,13 +225,6 @@ feat52 = floor( floor(X(:,52))/50) * 50; % rounding to 20 mm
 
 % feat_num=[X(:,feat),feat51,feat52];
 % feat_num=[X(:,feat),feat51];
-
-
-% feat_num=[round(X(:,[51,52]))];
-% feat_num=[round(X(:,[52]))];
-% feat_num=zscore(feat_num);
-
-% feat_num=zscore(feat_num);
 featName = arrayfun(@num2str, [1:1:length(feat_num(1,:))], 'unif', 0);   
 
 if testfeatNo==48
@@ -305,14 +291,10 @@ for  k = 1:num_crossVali
 
 
     
-
-%     jj=jj+1;
-%     ii=ii+3;
     clear feature_train class_train feature_test class_test
     clear actual_tmp predicted_tmp probDistr_tmp 
 
 end
-
 
 
     % to multiply predicted shear to span length to build moment
@@ -330,70 +312,21 @@ end
 figure2=figure('Position', [100, 100, 1024, 1200]);
 tvp=[mean(actualClass,2), nanmean(predictedClass,2)];
 
-%presenting data in %100
-% tvp=100*tvp;
 
-% % to find statistical parameters for Volume<0.5
-% indices1 = find(tvp(:,1)>0.5);
-% tvp(indices1,:) = [];
 
-% plotCorrelation_histogram3D(tvp,plotfname,tol)
+% % % to present just the ultimate load stage, the last index for each spec
 
-% plotCorrelation_all(tvp,plotfname,testfeatNo)
+ultimate_LS=[idx_last(2:end)-1;length(Spec_idx)];
+tvp=tvp(ultimate_LS,:);
+
 
 plotCorrelation_CI(tvp,plotfname,testfeatNo)
-% figure
-% plot(tvp(:,1),tvp(:,2),'k*','markers',7)
 
-%  figure3=figure('Position', [100, 100, 1024, 1200]);
 
-Xaxis=23;Yaxis=42;curveaxis=26; %13 15
-% plotRegression(X,plotfnameRegression,Xaxis,Yaxis,curveaxis)
-%  ylabel('Scaled shear $$(V/(2\sqrt{f_c}~bd)$$','fontsize',17,'FontName','Helvetica','Interpreter','latex'); 
-%  xlabel('Moment of inertia about x axis','fontsize',16,'FontName','Helvetica','Interpreter','text'); 
-
-%   ylabel('Scaled shear force','fontsize',17);  
-%   xlabel('Average distance between cracks ','fontsize',17);
-
-% figure4=figure('Position', [100, 100, 1024, 1200]);
-% plotname='regression-lessfeatures-_all-exuiform-deep-FractureRatio-all depth';
-
-plotname='regression-all data sets-d lower 20 in-fractureratio';
-
-Zaxis=43;Xaxis=13;Yaxis=3; %Zaxis=40;Xaxis=13;Yaxis=5;
-% plotMultipleregression(X,plotmultiRegression,Xaxis,Yaxis,Zaxis,plotname)
-
-% 
-% figure
-% 
-% plot(feat52,'.')
-% grid minor
-% 
-% figure
-% 
-% plot(feat51,'.')
-% grid minor
-
-% figure4=figure('Position', [100, 100, 1024, 1200]);
-% 
-% % plot the regression line vs tru line
-% Xcurve=X(:,Xaxis); Ycurve=X(:,Yaxis);
-% % removeid=find(Ycurve>0.98);
-% % Ycurve(removeid)=[];
-% % Xcurve(removeid)=[];
-% RegressionEQ=2.8876e-12*Xcurve.^3-5.4306e-08*Xcurve.^2+0.00031.*Xcurve+0.28;
-% 
-% tvr=[Ycurve, RegressionEQ];
-% Plot_No=1;
-% plotfregression='regressioin_feature13_includingultimatepointNEW';
-% plotCorrelation_regressionfit(tvr,plotfregression,Plot_No)
-
-% figure
-% plot(Ycurve,RegressionEQ,'*')
-% xlim([0 2]);
-% ylim([0 2]);
 %%
-% [tvp_stregth]=xlsread('input','shearstrength');
+figure3=figure('Position', [100, 100, 1024, 1200]);
+
+[tvp_stregth]=xlsread('input_worein','D4');
 % 
-% plotCorrelation_CI(tvp_stregth,'shear strength by ACI',1)
+plotCorrelation_CI(tvp_stregth,'3pBeamSlab-shear strength by ACI_withoutslab',1)
 

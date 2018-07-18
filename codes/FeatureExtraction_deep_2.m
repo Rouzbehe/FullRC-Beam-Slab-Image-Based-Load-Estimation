@@ -1,15 +1,12 @@
-function [OUTPUT]=FeatureExtraction_haunched(cracktype)
+function [OUTPUT]=FeatureExtraction_deep_2(cracktype)
 OUTPUT=cell(0);
 
-load Haunched.mat
+load deep_2.mat
 
-% MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
-
-for jj=1:length(Haunched)
+for jj=1:length(deep_2)
     
-    BW=Haunched{jj,1};
+    BW=deep_2{jj,1};
    [numrow, numcol] = size(BW);
 
    
@@ -107,7 +104,6 @@ end
     
     end
         
-    
     % find the average distance between cracks
     dist_map = bwdist(BW);
 

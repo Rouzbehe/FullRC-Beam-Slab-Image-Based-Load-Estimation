@@ -3,9 +3,7 @@ OUTPUT=cell(0);
 
 load Unifom.mat
 
-% MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
 
 for jj=1:length(Unifom)
     

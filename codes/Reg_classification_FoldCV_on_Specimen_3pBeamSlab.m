@@ -37,8 +37,6 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 [PCA_data,text_PCA] = xlsread('input_worein','PCA');
 % PCA_data = xlsread('input','PCA_ex_postcap');
 
-
-
 [Toronto_Data,text_Toronto]=xlsread('input_worein','Toronto');
 
 [Toronto_4m_Data,text_Toronto_4m]=xlsread('input_worein','4mdeep');
@@ -67,11 +65,6 @@ javaaddpath([pwd filesep 'matlab2weka' filesep 'matlab2weka.jar']);
 [OUTPUT_2meter]=FeatureExtraction('Cracks_2meter');
 
 [OUTPUT_low_a_d]=FeatureExtraction('Cracks_low_a_d');
-
-
-
-
-%   end
     
 for i=1:size(OUTPUT_120,1);
 Faet_120(i,:)=OUTPUT_120{i,1};
@@ -127,9 +120,6 @@ end
 [OUTPUT_Haunched]=FeatureExtraction_haunched('all');
 [OUTPUT_Uniform]=FeatureExtraction_uniform('all');
 
-
-
-%   end
     
 for i=1:size(OUTPUT_Training,1);
 Island_crack(i,:)=OUTPUT_Training{i,1};
@@ -175,10 +165,6 @@ end
 clear X1 X2 X tvp actualClass predictedClass tvp_stregth test idx idx1 idx2 actualClass1 actualClass2 predictedClass1 predictedClass2 finalactual finalpredicted
 
 plotfname='classReg/2Class-Multi-1T23,51round_Reg-SVM_case49_20,13,21,50,51,52';
-plotfnameRegression='size effect study';
-plotmultiRegression='Multiregression-size effect study';
-% number of resampling which was defined in other Scripts (the code in 
-%which output was produced)
 
 % featName = {'Compactness','Aspect Ratio', 'ThreshOut','Entropy', 'Contrast','Correlation','Energy','Homegenity','Variance','Area' ,'Perimeter','EulerNumber','Standard Deviation'};
 feat=[1:23];   % 1:20 same as before. 21:No of cracks,22: total distance between cracks 23:ave distance 24:(a/d) 26:(d) 45:shear index 47:(d/s)
@@ -204,11 +190,10 @@ testfeatNo=49;%  24=deflectionRatio, 25=V   27=M  28=M/EI  29 =M/bd2 30=M/Asfy  
               % 48=Shear through predicted M (KN) $$ direct V
               % 49=Shear through predicted M/bd2 (KN)  $$  direct V
               % 50=M through M/bd2  $$  M through V        
-num_crossVali=10;    
               
 % Performing num_crossVali fold Cross Validation
+num_crossVali=10;    
 
-%%%%%%%%%the approproate function should be chosen here %%%%%%%%%%%%
 
 
 
@@ -238,7 +223,7 @@ Specimens_name=[Specimens_name1;Specimens_name2];
 
 
 
-feat_num=[X(:,feat),round(X(:,51))]; % just rounded a/h values added for classification
+feat_num=[X(:,feat),round(X(:,51))]; % just rounded a/h values added for classification to avoide overfitting
 feat_num=zscore(feat_num);
 featName = arrayfun(@num2str, [1:1:length(feat_num(1,:))], 'unif', 0);   
 
@@ -277,7 +262,9 @@ Spec_idx=cell2mat(unique_idx);
 
 indices = crossvalind('Kfold',size(unique_idx,1),num_crossVali);
 
-% to find the ultimate load stage and corrosponding shear values
+% to find the ultimate load stage and corrosponding shear values 
+% (to compare with ACI nominal strength in the papaer)
+
 ultimate_LS=[idx_last(2:end)-1;length(Spec_idx)];
 ultimate_shear=X(ultimate_LS,25);
 
@@ -506,89 +493,3 @@ plotCorrelation_CI(tvp,plotfname,testfeatNo)
 
 
 
-
-
-% 
-% 
-% mean(AcuracyTest)
-% 
-% % 
-% % figure (13)
-% % 
-%  Y=[100*mean(probability(1:length(X1),1));100*mean(probability(length(X1)+1:end,2));AcuracyTest]
-%  err=[100*std(probability(1:length(X1),1)),100*std(probability(length(X1)+1:end,2)),0]
-% % h=bar(Y);
-% % ylabel('classification accuracy (%)')
-% % ybuff=2;
-% % for i=1:length(h)
-% %     XDATA=get(get(h(i),'Children'),'XData');
-% %     YDATA=get(get(h(i),'Children'),'YData');
-% %     for j=1:size(XDATA,2)
-% %         x=XDATA(1,j)+(XDATA(3,j)-XDATA(1,j))/2;
-% %         y=YDATA(2,j)+ybuff;
-% %         t=[num2str(YDATA(2,j),3) ,'%'];
-% %         text(x,y,t,'Color','k','HorizontalAlignment','left','Rotation',90)
-% %     end
-% % end
-% % ylim([0 100])
-% 
-% figure 
-% fH = gcf; colormap(jet(3));
-% %  Labels = {'Beams w and w/o reinforcement', 'Dat', 'IA'};
-% % set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
-% % Y=repmat(Y,[1,3])
-% h = bar(diag(Y),'stack');
-% % h=bar(Y);
-% ylabel('classification accuracy (%)')
-% ybuff=3;
-% for i=1:length(h)
-%     XDATA=get(get(h(i),'Children'),'XData');
-%     YDATA=get(get(h(i),'Children'),'YData');
-%     for j=1:size(XDATA,2)
-%         if i==j
-%         x=XDATA(1,j)-(XDATA(3,j)-XDATA(1,j))/80;
-%         x2=XDATA(1,j)+(XDATA(3,j)-XDATA(1,j))/1.35;
-%         y=YDATA(2,j)+ybuff;
-%         t=['',num2str(YDATA(2,j),3), '%' ];
-%         text(x,y,t,'Color','k','HorizontalAlignment','left','Rotation',0)
-%         if j<=2
-%         t_error=['SD=',num2str(err(j),3), '%' ];
-%         text(x2,y,t_error,'Color','k','HorizontalAlignment','left','Rotation',90) 
-%         end
-%         end
-% 
-%     end
-% end
-% 
-%   hold all
-% 
-%     hh = errorbar(Y(3), err(3))
-% % hh=errorbar(Y, err,L,L,'oy');
-% set(hh,'linestyle','none','linewidth',30) 
-%   hold all
-% 
-%     hh = errorbar(Y(1:2), err(1:2))
-% % hh=errorbar(Y, err,L,L,'oy');
-% set(hh,'linestyle','none','linewidth',30) 
-% %     set(hh,'linestyle','none')
-% % legend('Specimens with and without reinforcement','Specimens without reinforcement','Specimens with reinforcement','Location','NorthOutside')
-% %  set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
-% l = cell(1,3);
-% l{3}='Prediction accuracy for classifying specimens with and without reinforcement'; l{1}='Prediction probability of the model to classify specimens without reinforcement'; l{2}='Prediction probability of the model to classify specimens with reinforcement'; 
-% legend(h,l,'Location','NorthOutside');
-% 
-% ylim([0 120])
-% applyhatch_pluscolor(fH,'/\c', 0, [0 1 0], jet(3))
-% 
-% 
-% 
-% % applyhatch_pluscolor(gcf,'|-.+\',0,[1 1 0 1 0 ],cool(5),200,3,2)
-% % legend('baseline','SVM using Wavelet feat','SVM using Geometrical feat','J48 using Geometrical feat','SVM+J48 Geometrical feat','Position','bestoutside')
-% print(plotfname,'-dpdf', '-r2500');
-% print(plotfname,'-dpng', '-r1500');
-% 
-% 
-% 
-% 
-% 
-% 

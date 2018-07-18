@@ -45,16 +45,7 @@ num_crossVali=1;
 for kk=1:num_crossVali
  kk  
  
-% try
 
-
-
-%%%%%%%%%the approproate function should be chosen here %%%%%%%%%%%%
-
-% Island data
-% [OUTPUT_Crackshields]=FeatureExtraction_ex_postcap('all');
-% [OUTPUT_Crackshields]=FeatureExtraction_ex_postcap_line('all');
-% [OUTPUT_Crackshields]=FeatureExtraction_ex_postcap_BeamCropped('all');
 [OUTPUT_Training]=FeatureExtraction_ex_postcap_BeamCropped_line('all');
 % [OUTPUT_Crackshields]=Island_Scaled_segmented_ex_postcap_cropped_Skeltonized('all');
 
@@ -153,13 +144,6 @@ applyhatch_pluscolor(fH,'c', 0, [1], jet(5))
 
 
 
-%plotfname='Features_V_CrackType_All';
-% if (exist(char('May28_Accuracy_Parameters'),'dir') == 0); mkdir(char('May28_Accuracy_Parameters')); end;
-% Namepdf = strcat('May28_Accuracy_Parameters','/',plotfname,'.pdf');
-% NameJPG = strcat('May28_Accuracy_Parameters','/',plotfname);
-
-% print('-dpdf',char(Namepdf),'-r600')
-% print(char(NameJPG),'-dpng', '-r1000');
 
 
 

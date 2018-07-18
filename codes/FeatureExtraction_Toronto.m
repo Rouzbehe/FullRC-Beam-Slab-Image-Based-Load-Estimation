@@ -1,15 +1,14 @@
-function [OUTPUT]=FeatureExtraction_deep(cracktype)
+function [OUTPUT]=FeatureExtraction_Toronto(cracktype)
 OUTPUT=cell(0);
 
-load deep.mat
+load Toronto.mat
 
 % MIN_OBJECT_SIZE = 10;  % 
 
-%uploading crack shields from "Island_Scaled_segmented.mat" 54 data sets
 
-for jj=1:length(deep)
+for jj=1:length(Toronto)
     
-    BW=deep{jj,1};
+    BW=Toronto{jj,1};
    [numrow, numcol] = size(BW);
 
    
@@ -107,6 +106,7 @@ end
     
     end
         
+    
     % find the average distance between cracks
     dist_map = bwdist(BW);
 
@@ -127,7 +127,6 @@ end
     else
     average_distance = avg_distance_intensity / avg_distance_area ; 
     end
-
   
 
         p(1).Compactness=mean(compactness);

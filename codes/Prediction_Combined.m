@@ -76,10 +76,6 @@ num_crossVali=10;
 
 [OUTPUT_low_a_d]=FeatureExtraction('Cracks_low_a_d');
 
-
-
-
-%   end
     
 for i=1:size(OUTPUT_120,1);
 Faet_120(i,:)=OUTPUT_120{i,1};
@@ -171,30 +167,8 @@ end
 figure2=figure('Position', [100, 100, 1024, 1200]);
 tvp=[mean(actualClass,2), nanmean(predictedClass,2)];
 
-%presenting data in %100
-% tvp=100*tvp;
-
-% % to find statistical parameters for Volume<0.5
-% indices1 = find(tvp(:,1)>0.5);
-% tvp(indices1,:) = [];
-
-% plotCorrelation_histogram3D(tvp,plotfname,tol)
-
-% plotCorrelation_all(tvp,plotfname,testfeatNo)
-
 plotCorrelation_CI(tvp,plotfname,testfeatNo)
 
-% figure3=figure('Position', [100, 100, 1024, 1200]);
-% 
-% Xaxis=40;Yaxis=41;curveaxis=22; %13 15
-% plotRegression(X,plotfnameRegression,Xaxis,Yaxis,curveaxis)
-%   xlabel('V/V_{ACI} ','fontsize',17);
-%   ylabel('Fracture Ratio','fontsize',17);  
-% 
-% % figure4=figure('Position', [100, 100, 1024, 1200]);
-% 
-% Zaxis=41;Xaxis=13;Yaxis=21; %Zaxis=40;Xaxis=13;Yaxis=5;
-% plotMultipleregression(X,plotmultiRegression,Xaxis,Yaxis,Zaxis)
 
 
 

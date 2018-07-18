@@ -71,11 +71,10 @@ testfeatNo=47;%   25=V   27=M  28=M/EI  29 =M/bd2 30=M/Asfy  29=V/GJ  32=M/bh 33
               % 46=Av fy d/s (N) (shear stregth of the steel)
              % (45, 46 and 47 features are zero for data sets w/o shear
              % reinfprcement)
-num_crossVali=10;    
               
 % Performing num_crossVali fold Cross Validation
+num_crossVali=10;    
 
-%%%%%%%%%the approproate function should be chosen here %%%%%%%%%%%%
 
 % Cracks_120 data
 [OUTPUT_120]=FeatureExtraction('Cracks_120');
@@ -96,10 +95,6 @@ num_crossVali=10;
 [OUTPUT_low_a_d]=FeatureExtraction('Cracks_low_a_d');
 
 
-
-
-%   end
-    
 for i=1:size(OUTPUT_120,1);
 Faet_120(i,:)=OUTPUT_120{i,1};
 end
@@ -152,9 +147,6 @@ end
 [OUTPUT_Haunched]=FeatureExtraction_haunched('all');
 [OUTPUT_Uniform]=FeatureExtraction_uniform('all');
 
-
-
-%   end
     
 for i=1:size(OUTPUT_Training,1);
 Island_crack(i,:)=OUTPUT_Training{i,1};
@@ -370,13 +362,7 @@ for i=1:length(h)
 end
 ylim([0 100])
 
-% figure 
-% fH = gcf; colormap(jet(3));
-% %  Labels = {'Beams w and w/o reinforcement', 'Dat', 'IA'};
-% % set(gca, 'XTick', 1:3, 'XTickLabel', Labels);
-% % Y=repmat(Y,[1,3])
-% h = bar(diag(Y),'stack');
-% h=bar(Y);
+
 ylabel('classification accuracy (%)')
 % 
 % ybuff=3;
